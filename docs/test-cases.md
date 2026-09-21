@@ -1,4 +1,4 @@
-# Casos de teste resumidos - Duolingo Qazando
+# Casos de teste resumidos - Trilha do Inglês Qazando
 
 ## 1. Visualização da grade de unidades
 - Objetivo: verificar a apresentação inicial da jornada de aprendizagem.

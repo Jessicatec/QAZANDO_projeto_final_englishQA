@@ -1,4 +1,4 @@
-# English QA - Duolingo automation project
+# English QA - Trilha do Inglês automation project
 
 Projeto de automação de testes para validar o fluxo real do English QA, iniciando em `/auth`, seguindo com login válido, acesso a "Ir para Exercícios", seleção da "Trilha do Inglês" e verificação das unidades, lições, XP, acessibilidade e comportamento sob carga.
 
@@ -54,7 +54,7 @@ npx playwright show-report playwright-report
 $env:BASE_URL="https://english.qazando.com.br"
 $env:TEST_USER_EMAIL="admin@teste.com"
 $env:TEST_USER_PASSWORD="Teste@123"
-& "C:\Program Files\k6\k6.exe" run .\performance\duolingo-trilha.k6.js
+& "C:\Program Files\k6\k6.exe" run .\performance\trilha_ingles.k6.js
 ```
 
 ## Fluxo coberto

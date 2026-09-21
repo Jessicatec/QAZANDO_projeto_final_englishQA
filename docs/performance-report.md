@@ -1,4 +1,4 @@
-# Relatório de desempenho - Feature Duolingo Trilha
+# Relatório de desempenho - Feature Trilha do Inglês
 
 ## Objetivo
 
@@ -24,7 +24,7 @@ Os cenários cobrem:
 ## Script de performance
 
 Arquivo principal:
-- `performance/duolingo-trilha.k6.js`
+- `performance/trilha_ingles.k6.js`
 
 ## Comando de execução
 
@@ -34,7 +34,7 @@ Arquivo principal:
 $env:BASE_URL="https://english.qazando.com.br"
 $env:TEST_USER_EMAIL="admin@teste.com"
 $env:TEST_USER_PASSWORD="Teste@123"
-k6 run .\performance\duolingo-trilha.k6.js
+k6 run .\performance\trilha_ingles.k6.js
 ```
 
 ### Bash / zsh
@@ -43,7 +43,7 @@ k6 run .\performance\duolingo-trilha.k6.js
 BASE_URL=https://english.qazando.com.br \
 TEST_USER_EMAIL=admin@teste.com \
 TEST_USER_PASSWORD=Teste@123 \
-k6 run ./performance/duolingo-trilha.k6.js
+k6 run ./performance/trilha_ingles.k6.js
 ```
 
 ## Critérios de aceitação
@@ -63,7 +63,7 @@ Comando executado:
 $env:BASE_URL="https://english.qazando.com.br"
 $env:TEST_USER_EMAIL="admin@teste.com"
 $env:TEST_USER_PASSWORD="Teste@123"
-& "C:\Program Files\k6\k6.exe" run .\performance\duolingo-trilha.k6.js
+& "C:\Program Files\k6\k6.exe" run .\performance\trilha_ingles.k6.js
 ```
 
 Resultado real obtido:

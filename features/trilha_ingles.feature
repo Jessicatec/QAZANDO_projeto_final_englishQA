@@ -1,5 +1,5 @@
 # language: pt
-Funcionalidade: Trilhas de aprendizagem do English QA
+Funcionalidade: Trilha do Inglês
   Como usuário autenticado do English QA
   Quero acessar a trilha de inglês e completar as lições em sequência
   Para evoluir no curso e ganhar XP

@@ -1,10 +1,10 @@
-Feature: Duolingo learning module
+Feature: Trilha do Inglês
   As a user of the Qazando English QA course
   I want to navigate through the progressive units and lessons
   So that I can complete lessons and gain XP in sequence
 
   Scenario: Visualização da grade de unidades e lições
-    Given the user is on the Duolingo learning page
+    Given the user is on the Trilha do Inglês page
     When the page loads completely
     Then the user should see 4 progressive units
     And each unit should contain lesson cards or actions
