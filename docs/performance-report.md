@@ -17,8 +17,9 @@ Os cenários cobrem:
 
 | Cenário | Tipo | Usuários | Duração | Objetivo |
 |---|---|---:|---|---|
-| `duolingo_login_smoke` | Smoke | 1 VU constante | 20s | Validar que o login e o acesso à trilha funcionam em fluxo simples |
-| `duolingo_trail_load` | Load | 2 → 5 VUs | 45s total | Validar a trilha com aumento gradual de concorrência |
+| `performance_trilhaingles` | Smoke | 1 VU constante | 20s | Validar que o login e o acesso à trilha funcionam em fluxo simples |
+| `performance_trilhaingles_load` | Load | 2 → 5 VUs | 45s total | Validar a trilha com aumento gradual de concorrência |
+| `performance_trilhaingles_escala` | Stress/Load | 10 → 30 → 60 → 100 → 200 → 500 → 1000 VUs | 2m5s total | Validar a estabilidade da trilha em crescimento escalonado de uso e identificar o ponto de saturação |
 
 ## Script de performance
 
@@ -54,7 +55,7 @@ k6 run ./performance/duolingo-trilha.k6.js
 
 ## Evidência executada
 
-Execução validada com o K6 instalado e disponível no ambiente.
+Execução validada com o K6 instalado e disponível no ambiente, incluindo o novo cenário escalonado de usuários.
 
 Comando executado:
 
@@ -68,26 +69,31 @@ $env:TEST_USER_PASSWORD="Teste@123"
 Resultado real obtido:
 
 ```text
-checks_total.......: 483     10.672634/s
-checks_succeeded...: 100.00% 483 out of 483
-checks_failed......: 0.00%   0 out of 483
+scenarios: (100.00%) 3 scenarios, 1000 max VUs, 2m35s max duration
+* performance_trilhaingles: 1 looping VUs for 20s
+* performance_trilhaingles_escala: Up to 1000 looping VUs for 2m5s over 8 stages
+* performance_trilhaingles_load: Up to 5 looping VUs for 45s over 3 stages
 
-http_req_duration..............: avg=72.75ms min=49.2ms med=63.97ms max=1.07s p(90)=76.04ms p(95)=82.34ms
-http_req_failed................: 0.00%  0 out of 644
-http_reqs......................: 644    14.230179/s
+checks_total.......: 22319   145.168537/s
+checks_succeeded...: 100.00% 22319 out of 22319
+checks_failed......: 0.00%   0 out of 22319
 
-running (0m45.3s), 0/6 VUs, 161 complete and 0 interrupted iterations
+http_req_duration..............: avg=913.57ms min=0s med=220.95ms max=53.08s p(90)=1.43s p(95)=2.78s
+http_req_failed................: 0.27% 81 out of 29806
+http_reqs......................: 29806 193.865918/s
+
+running (2m33.7s), 0000/1000 VUs, 7437 complete and 7 interrupted iterations
 ```
 
 ## Resultado final da execução
 
-- Cenários executados: 2
-- Checks considerados: 483
-- Checks bem-sucedidos: 483 (100%)
-- Falhas HTTP: 0%
-- p95 da resposta: 82.34ms
-- Status geral: aprovado
+- Cenários executados: 3
+- Checks considerados: 22319
+- Checks bem-sucedidos: 22319 (100%)
+- Falhas HTTP: 0.27% (81/29806)
+- p95 da resposta: 2.78s
+- Status geral: limiar de desempenho excedido no pico de carga (p95 acima do critério de 2s)
 
 ## Observação final
 
-O fluxo principal da trilha do inglês se mostrou estável sob a carga leve aplicada e atende aos critérios de aceitação definidos para autenticação e acesso à trilha.
+O cenário escalonado com 10, 30, 60, 100, 200, 500 e 1000 usuários foi adicionado e executado com sucesso até o pico de carga. O ambiente começou a demonstrar lentidão e algumas falhas de conexão na fase mais intensa, indicando que o sistema atinge seu limite de estabilidade em alta concorrência mesmo com o fluxo principal funcionando.

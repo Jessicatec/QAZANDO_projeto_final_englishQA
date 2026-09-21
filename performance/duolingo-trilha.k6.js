@@ -60,18 +60,33 @@ function accessLearningTrail() {
 
 export const options = {
   scenarios: {
-    duolingo_login_smoke: {
+    performance_trilhaingles: {
       executor: 'constant-vus',
       vus: 1,
       duration: '20s',
       exec: 'smokeJourney',
     },
-    duolingo_trail_load: {
+    performance_trilhaingles_load: {
       executor: 'ramping-vus',
       startVUs: 2,
       stages: [
         { duration: '10s', target: 5 },
         { duration: '25s', target: 5 },
+        { duration: '10s', target: 0 },
+      ],
+      exec: 'loadJourney',
+    },
+    performance_trilhaingles_escala: {
+      executor: 'ramping-vus',
+      startVUs: 10,
+      stages: [
+        { duration: '10s', target: 10 },
+        { duration: '15s', target: 30 },
+        { duration: '15s', target: 60 },
+        { duration: '15s', target: 100 },
+        { duration: '20s', target: 200 },
+        { duration: '20s', target: 500 },
+        { duration: '20s', target: 1000 },
         { duration: '10s', target: 0 },
       ],
       exec: 'loadJourney',
