@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:docs": "playwright test tests/documentacao.spec.ts",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report playwright-report",
     "test:perf:trilha_ingles": "k6 run performance/trilha_ingles.k6.js"
