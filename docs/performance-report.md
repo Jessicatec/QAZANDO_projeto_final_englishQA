@@ -20,11 +20,16 @@ Os cenários cobrem:
 | `performance_Exercicios` | Smoke | 1 VU constante | 20s | Validar que o login e o acesso à trilha funcionam em fluxo simples |
 | `performance_Exercicios_load` | Load | 10 → 50 VUs | 45s total | Validar a trilha com aumento progressivo de carga |
 | `performance_Exercicios_escala` | Stress/Load | 10 → 50 → 100 → 200 → 500 → 1000 VUs | 1m45s total | Validar a estabilidade em pico de concorrência e identificar gargalos |
+| `performance_documentacao` | Smoke | 1 VU constante | 20s | Validar login e carregamento da tela de documentação |
+| `performance_documentacao_load` | Load | 10 → 50 → 100 VUs | 35s total | Validar a página de documentação em carga incremental |
+| `performance_documentacao_escala` | Stress/Load | 10 → 50 → 100 → 500 → 1000 VUs | 1m25s total | Validar estabilidade da tela de documentação em pico de uso |
+| `performance_documentacao_spike` | Spike | 20 → 1000 VUs | 35s total | Validar comportamento em pico rápido e picos de pico alta carga |
 
 ## Script de performance
 
-Arquivo principal:
+Arquivos principais:
 - `performance/trilha_ingles.k6.js`
+- `performance/documentacao.k6.js`
 
 ## Comando de execução
 
