@@ -32,9 +32,9 @@ k6 run ./performance/trilha_ingles.k6.js
 
 ## Cenários configurados
 
-- `performance_trilhaingles`: 1 usuário constante por 20s
-- `performance_trilhaingles_load`: ramp-up de 2 para 5 usuários, com pico de 25s
-- `performance_trilhaingles_escala`: escalonamento de 10 para 1000 usuários para validar a saturação da trilha
+- `performance_Exercicios`: 1 usuário constante por 20s
+- `performance_Exercicios_load`: ramp-up de 10 para 50 usuários para validar a carga incremental
+- `performance_Exercicios_escala`: escalonamento de 10, 50, 100, 200, 500 e 1000 usuários para validar carga e stress
 
 ## Objetivo
 

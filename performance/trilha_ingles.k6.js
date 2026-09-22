@@ -1,10 +1,14 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
+import { Rate, Trend } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'https://english.qazando.com.br';
 const TEST_USER_EMAIL = __ENV.TEST_USER_EMAIL || 'admin@teste.com';
 const TEST_USER_PASSWORD = __ENV.TEST_USER_PASSWORD || 'Teste@123';
 const FORM_BODY = `email=${encodeURIComponent(TEST_USER_EMAIL)}&password=${encodeURIComponent(TEST_USER_PASSWORD)}`;
+
+const responseTime = new Trend('exercise_response_time');
+const errorRate = new Rate('exercise_error_rate');
 
 function authAttempts() {
   return [
@@ -60,35 +64,36 @@ function accessLearningTrail() {
 
 export const options = {
   scenarios: {
-    performance_trilhaingles: {
+    performance_Exercicios: {
       executor: 'constant-vus',
       vus: 1,
       duration: '20s',
       exec: 'smokeJourney',
     },
-    performance_trilhaingles_load: {
-      executor: 'ramping-vus',
-      startVUs: 2,
-      stages: [
-        { duration: '10s', target: 5 },
-        { duration: '25s', target: 5 },
-        { duration: '10s', target: 0 },
-      ],
-      exec: 'loadJourney',
-    },
-    performance_trilhaingles_escala: {
+    performance_Exercicios_load: {
       executor: 'ramping-vus',
       startVUs: 10,
       stages: [
         { duration: '10s', target: 10 },
-        { duration: '15s', target: 30 },
-        { duration: '15s', target: 60 },
-        { duration: '15s', target: 100 },
+        { duration: '15s', target: 50 },
+        { duration: '15s', target: 50 },
+        { duration: '10s', target: 0 },
+      ],
+      exec: 'loadJourney',
+    },
+    performance_Exercicios_escala: {
+      executor: 'ramping-vus',
+      startVUs: 10,
+      stages: [
+        { duration: '15s', target: 10 },
+        { duration: '20s', target: 50 },
+        { duration: '20s', target: 100 },
         { duration: '20s', target: 200 },
         { duration: '20s', target: 500 },
         { duration: '20s', target: 1000 },
         { duration: '10s', target: 0 },
       ],
+      gracefulRampDown: '10s',
       exec: 'loadJourney',
     },
   },
@@ -96,6 +101,8 @@ export const options = {
     http_req_failed: ['rate<0.05'],
     http_req_duration: ['p(95)<2000'],
     checks: ['rate>0.95'],
+    exercise_error_rate: ['rate<0.05'],
+    exercise_response_time: ['p(95)<2000'],
   },
 };
 
@@ -104,8 +111,12 @@ export default function () {
 }
 
 export function smokeJourney() {
-  group('autenticação e trilha do inglês', () => {
+  group('autenticação e exercícios', () => {
     const auth = authenticate();
+
+    const loginDuration = auth.login ? auth.login.timings.duration : 0;
+    responseTime.add(loginDuration);
+    errorRate.add(!!auth.login && auth.login.status >= 400);
 
     check(auth.login, {
       'login completed successfully': (r) => !!r && r.status >= 200 && r.status < 400,
@@ -116,6 +127,10 @@ export function smokeJourney() {
     }
 
     const pages = accessLearningTrail();
+
+    responseTime.add(pages.exercises.timings.duration);
+    responseTime.add(pages.trail.timings.duration);
+    errorRate.add(pages.exercises.status >= 400 || pages.trail.status >= 400);
 
     check(pages.exercises, {
       'view exercises screen': (r) => !!r && (r.status === 200 || r.url.includes('/exercises') || r.url.includes('/duolingo')),
@@ -130,8 +145,12 @@ export function smokeJourney() {
 }
 
 export function loadJourney() {
-  group('carga na trilha do inglês', () => {
+  group('carga em exercícios', () => {
     const auth = authenticate();
+
+    const loginDuration = auth.login ? auth.login.timings.duration : 0;
+    responseTime.add(loginDuration);
+    errorRate.add(!!auth.login && auth.login.status >= 400);
 
     check(auth.login, {
       'login succeeded under load': (r) => !!r && r.status >= 200 && r.status < 400,
@@ -142,6 +161,10 @@ export function loadJourney() {
     }
 
     const pages = accessLearningTrail();
+
+    responseTime.add(pages.exercises.timings.duration);
+    responseTime.add(pages.trail.timings.duration);
+    errorRate.add(pages.exercises.status >= 400 || pages.trail.status >= 400);
 
     check(pages.exercises, {
       'exercises endpoint is reachable': (r) => !!r && (r.status === 200 || r.url.includes('/exercises')),
