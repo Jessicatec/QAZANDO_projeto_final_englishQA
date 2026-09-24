@@ -6,10 +6,12 @@
   "scripts": {
     "test": "playwright test",
     "test:docs": "playwright test tests/documentacao.spec.ts",
+    "test:ranking": "playwright test tests/ranking.spec.ts",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report playwright-report",
     "test:perf:trilha_ingles": "k6 run performance/trilha_ingles.k6.js",
-    "test:perf:documentacao": "k6 run performance/documentacao.k6.js"
+    "test:perf:documentacao": "k6 run performance/documentacao.k6.js",
+    "test:perf:ranking": "k6 run performance/performance_ranking.k6.js"
   },
   "keywords": [],
   "author": "",
