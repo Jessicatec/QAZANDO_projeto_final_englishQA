@@ -1,5 +1,15 @@
+# Dependências
 node_modules/
+
+# Artefatos de execução (gerados a cada rodada)
 playwright-report/
 test-results/
+blob-report/
+reports/
+
+# Credenciais
 .env
+
+# Sistema
 .DS_Store
+Thumbs.db

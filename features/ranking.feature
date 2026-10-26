@@ -68,3 +68,15 @@ Feature: Ranking
     When the page is displayed
     Then the interface must explain the reason clearly
     And the user must understand the next action to take
+
+  Scenario: RANK-12 - Ranking com massa de usuários simulada validando regra de participação e ordenação
+    Given the system has a valid authenticated user
+    And there are multiple simulated participants in the ranking dataset
+    And some participants have fewer than 5 completed exercises
+    And some participants have 5 or more completed exercises
+    And the total score is calculated from quiz and exercise correct answers
+    When the user accesses the "/ranking" page
+    Then only participants with at least 5 completed exercises must be displayed
+    And the list must be ordered by total correct answers in descending order
+    And each participant must show name, email and statistics correctly
+    And the interface must remain readable and visually stable with multiple entries

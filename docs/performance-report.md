@@ -33,22 +33,12 @@ Arquivos principais:
 
 ## Comando de execução
 
-### Windows PowerShell
-
-```powershell
-$env:BASE_URL="https://english.qazando.com.br"
-$env:TEST_USER_EMAIL="admin@teste.com"
-$env:TEST_USER_PASSWORD="Teste@123"
-k6 run .\performance\trilha_ingles.k6.js
-```
-
-### Bash / zsh
+As credenciais são lidas do `.env`. Cada perfil executa apenas os seus cenários (veja [performance/README.md](../performance/README.md)).
 
 ```bash
-BASE_URL=https://english.qazando.com.br \
-TEST_USER_EMAIL=admin@teste.com \
-TEST_USER_PASSWORD=Teste@123 \
-k6 run ./performance/trilha_ingles.k6.js
+npm run test:perf:trilha_ingles              # smoke (padrão)
+npm run test:perf:trilha_ingles -- load
+npm run test:perf:trilha_ingles -- stress
 ```
 
 ## Critérios de aceitação
@@ -60,18 +50,19 @@ k6 run ./performance/trilha_ingles.k6.js
 
 ## Evidência executada
 
-Execução validada com o K6 instalado e disponível no ambiente, incluindo o novo cenário escalonado de usuários.
+### Smoke - 26/10/2026
 
-Comando executado:
+Perfil `smoke` (1 VU por 20 s): **thresholds aprovados**.
 
-```powershell
-$env:BASE_URL="https://english.qazando.com.br"
-$env:TEST_USER_EMAIL="admin@teste.com"
-$env:TEST_USER_PASSWORD="Teste@123"
-& "C:\Program Files\k6\k6.exe" run .\performance\trilha_ingles.k6.js
-```
+| Métrica | Resultado |
+| --- | --- |
+| Checks | 100% (45/45) |
+| `http_req_failed` | 0,00% (0/60) |
+| `http_req_duration` p95 | 187,79 ms |
 
-Resultado real obtido:
+### Execução com todos os cenários simultâneos (registro anterior)
+
+Execução realizada antes da separação por perfis, com os 3 cenários rodando ao mesmo tempo. Resultado real obtido:
 
 ```text
 scenarios: (100.00%) 3 scenarios, 1000 max VUs, 2m35s max duration

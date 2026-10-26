@@ -67,3 +67,18 @@ Funcionalidade: Trilha do Inglês
     Quando a ação obrigatória não for executada
     Então uma mensagem de validação ou erro deve ser exibida
     E o usuário deve conseguir tentar novamente sem perder o progresso já realizado
+
+  @funcional
+  Cenário: Estados visuais de lição bloqueada, ativa e concluída
+    Dado que estou visualizando a lista de lições
+    Quando comparo os estados das lições
+    Então as lições bloqueadas devem aparecer desabilitadas
+    E as lições ativas devem ficar destacadas
+    E as concluídas devem mostrar feedback de sucesso
+
+  @funcional
+  Cenário: Fluxo positivo de finalização de unidade
+    Dado que concluí todas as lições obrigatórias da unidade em sequência
+    Quando a última lição da unidade é concluída
+    Então a unidade deve ser marcada como concluída
+    E a próxima unidade deve ser desbloqueada na ordem de progressão

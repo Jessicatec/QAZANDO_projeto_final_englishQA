@@ -1,50 +1,55 @@
-# K6 performance - Trilha do Inglês
+# Performance com k6
 
-Este diretório contém cenários de performance para validar o fluxo principal da funcionalidade de trilha do inglês.
+Scripts de carga das três áreas automatizadas. Cada script tem vários cenários, agrupados em **perfis**; só o perfil escolhido é executado. O perfil padrão é `smoke` (1 VU por 20 s), para que nenhuma execução dispare carga alta por engano.
 
-## Variáveis de ambiente
+> Execute perfis de carga (`load`, `stress`, `spike`, `blocked`) apenas com autorização do responsável pelo ambiente.
 
-```bash
-BASE_URL=https://english.qazando.com.br
-TEST_USER_EMAIL=admin@teste.com
-TEST_USER_PASSWORD=Teste@123
-```
+## Pré-requisitos
+
+- [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/) instalado e no `PATH` (`k6 version`).
+- Arquivo `.env` preenchido na raiz do projeto (veja `.env.example`). O runner `scripts/run-k6.js` lê o `.env` e repassa as variáveis ao k6.
 
 ## Executar
 
-### Windows PowerShell
-
-```powershell
-$env:BASE_URL="https://english.qazando.com.br"
-$env:TEST_USER_EMAIL="admin@teste.com"
-$env:TEST_USER_PASSWORD="Teste@123"
-k6 run .\performance\trilha_ingles.k6.js
-```
-
-### Bash / zsh
-
 ```bash
-BASE_URL=https://english.qazando.com.br \
-TEST_USER_EMAIL=admin@teste.com \
-TEST_USER_PASSWORD=Teste@123 \
-k6 run ./performance/trilha_ingles.k6.js
+npm run test:perf:smoke                    # smoke das 3 áreas, em sequência
+npm run test:perf:trilha_ingles            # smoke da Trilha do Inglês
+npm run test:perf:documentacao -- load     # outro perfil: informe depois de --
+npm run test:perf:ranking -- stress
 ```
 
-## Cenários configurados
+## Perfis disponíveis
 
-- `performance_Exercicios`: 1 usuário constante por 20s
-- `performance_Exercicios_load`: ramp-up de 10 para 50 usuários para validar a carga incremental
-- `performance_Exercicios_escala`: escalonamento de 10, 50, 100, 200, 500 e 1000 usuários para validar carga e stress
+| Script | Perfil | Cenário | Carga |
+| --- | --- | --- | --- |
+| `trilha_ingles.k6.js` | `smoke` | `performance_Exercicios` | 1 VU constante por 20 s |
+| | `load` | `performance_Exercicios_load` | 10 → 50 VUs |
+| | `stress` | `performance_Exercicios_escala` | 10 → 1000 VUs |
+| `documentacao.k6.js` | `smoke` | `performance_documentacao` | 1 VU constante por 20 s |
+| | `load` | `performance_documentacao_load` | 10 → 100 VUs |
+| | `stress` | `performance_documentacao_escala` | 10 → 1000 VUs |
+| | `spike` | `performance_documentacao_spike` | 20 → 1000 VUs em 15 s |
+| `performance_ranking.k6.js` | `smoke` | `smoke_ranking` | 1 VU constante por 20 s |
+| | `stress` | `performance_ranking_ramp` | 10 → 1000 VUs |
+| | `blocked` | `performance_ranking_blocked_access` | 25 VUs constantes (usuário sem Premium) |
+| | `premium` | `performance_ranking_premium` | 1 VU (exige `PREMIUM_USER_EMAIL`/`PREMIUM_USER_PASSWORD`) |
 
-## Objetivo
+## Thresholds
 
-Validar as rotas mais críticas do fluxo autenticado:
+| Script | `http_req_duration` p95 | `http_req_failed` | `checks` |
+| --- | --- | --- | --- |
+| Trilha do Inglês | < 2000 ms | < 5% | > 95% |
+| Documentação | < 2500 ms | < 5% | > 95% |
+| Ranking | < 2500 ms | < 5% | > 95% |
 
-1. autenticação
-2. acesso ao menu de exercícios
-3. navegação para a trilha do inglês
-4. resiliência sob carga leve
+Se algum threshold for reprovado, o k6 encerra com código diferente de zero e o relatório marca **Thresholds reprovados**.
 
-## Observação
+## Relatórios
 
-O script foi desenhado para seguir a regra de negócio da feature e validar o comportamento do fluxo principal sob carga, sem bloquear a navegação de usuários reais.
+Ao final de cada execução, `performance/lib/k6-utils.js` gera:
+
+- `reports/k6/<area>-<perfil>.html`: relatório visual com thresholds, checks e métricas;
+- `reports/k6/<area>-<perfil>.json`: dados completos da execução;
+- resumo no terminal.
+
+A pasta `reports/` não vai para o Git. As análises das execuções registradas ficam em [`docs/`](../docs/README.md).

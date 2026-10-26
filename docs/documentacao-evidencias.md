@@ -28,3 +28,23 @@ Validar a interface e a funcionalidade da tela de documentação do English QA e
 ## Observações
 
 A página confirmou a estrutura esperada: título principal "Documentação", introdução do contexto de negócios, lista de funcionalidades em accordion e tabela de usuários de teste com perfis Admin, Premium Ativo, Usuário Comum e Sem Email Confirmado.
+
+## Cenários manuais
+
+### CN001 - Acessar a página de documentação
+- Objetivo: validar o acesso e o carregamento inicial da página de documentação.
+- Pré-condições: usuário com credenciais válidas e confirmado no sistema.
+- Passos:
+	1. Fazer login no English QA.
+	2. Acessar a página de documentação pelo menu ou diretamente pela rota `/docs`.
+	3. Conferir o título, a introdução, a lista de funcionalidades e a tabela de usuários de teste.
+- Resultado esperado: a página de documentação é carregada para o usuário autenticado, com os principais blocos visíveis e sem erros de interface.
+
+### CN002 - Expandir uma funcionalidade para ver os detalhes das regras de negócio
+- Objetivo: verificar se os detalhes e as regras de negócio de uma funcionalidade podem ser consultados.
+- Pré-condições: usuário autenticado na página de documentação.
+- Passos:
+	1. Localizar um card de funcionalidade, por exemplo, "Cadastro e Acesso Gratuito".
+	2. Acionar o card usando mouse ou teclado.
+	3. Conferir a área expandida e o conteúdo das regras de negócio.
+- Resultado esperado: o card expande e apresenta os detalhes e as regras de negócio correspondentes à funcionalidade selecionada.

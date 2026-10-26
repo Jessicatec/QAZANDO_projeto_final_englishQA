@@ -49,7 +49,7 @@ test.describe('English QA - Documentação', () => {
     await expect(page.getByRole('columnheader', { name: 'Descrição', exact: true })).toBeVisible({ timeout: 20_000 });
   });
 
-  test('mantém a navegação por teclado acessível nos cards de documentação', async ({ page }) => {
+  test('mantém a navegação por teclado acessível nos cards de documentação', async ({ page }, testInfo) => {
     await loginAndOpenDocs(page);
 
     const firstCard = page.getByRole('button', { name: /Cadastro e Acesso Gratuito/i });
@@ -61,6 +61,9 @@ test.describe('English QA - Documentação', () => {
     await expect(nextCard).toBeVisible({ timeout: 20_000 });
     await expect(nextCard).toBeFocused({ timeout: 20_000 });
 
-    await page.screenshot({ path: 'docs/documentacao-evidencia.png', fullPage: true });
+    await testInfo.attach('documentacao-evidencia', {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    });
   });
 });

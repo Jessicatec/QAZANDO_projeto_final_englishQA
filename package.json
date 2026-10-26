@@ -1,19 +1,31 @@
 {
   "name": "projeto_final_englishqa",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Portfólio de QA com cenários manuais, automação Playwright e performance k6 para a plataforma English QA.",
   "scripts": {
     "test": "playwright test",
+    "test:trilha-ingles": "playwright test tests/trilha_ingles.spec.ts",
+    "test:exercicios": "playwright test tests/exercicios.spec.ts",
+    "test:documentacao": "playwright test tests/documentacao.spec.ts",
     "test:docs": "playwright test tests/documentacao.spec.ts",
     "test:ranking": "playwright test tests/ranking.spec.ts",
+    "test:ranking:mass-data": "playwright test tests/ranking-mass-data.spec.ts",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report playwright-report",
-    "test:perf:trilha_ingles": "k6 run performance/trilha_ingles.k6.js",
-    "test:perf:documentacao": "k6 run performance/documentacao.k6.js",
-    "test:perf:ranking": "k6 run performance/performance_ranking.k6.js"
+    "test:perf:trilha_ingles": "node scripts/run-k6.js performance/trilha_ingles.k6.js",
+    "test:perf:documentacao": "node scripts/run-k6.js performance/documentacao.k6.js",
+    "test:perf:ranking": "node scripts/run-k6.js performance/performance_ranking.k6.js",
+    "test:perf:smoke": "node scripts/run-k6.js all smoke"
   },
-  "keywords": [],
+  "keywords": [
+    "qa",
+    "quality-assurance",
+    "playwright",
+    "k6",
+    "gherkin",
+    "test-automation"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -22,7 +34,6 @@
     "@types/node": "^26.6.2"
   },
   "dependencies": {
-    "dotenv": "^18.0.1",
-    "playwright-bdd": "^9.2.1"
+    "dotenv": "^18.0.1"
   }
 }

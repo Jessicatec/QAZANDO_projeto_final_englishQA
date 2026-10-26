@@ -17,18 +17,34 @@ Validar o comportamento da tela de documentação da plataforma English QA sob c
 
 ## Comando de execução
 
-```powershell
-$env:BASE_URL="https://english.qazando.com.br"
-$env:TEST_USER_EMAIL="admin@teste.com"
-$env:TEST_USER_PASSWORD="Teste@123"
-& "C:\Program Files\k6\k6.exe" run .\performance\documentacao.k6.js
+As credenciais são lidas do `.env`. Cada perfil executa apenas os seus cenários (veja [performance/README.md](../performance/README.md)).
+
+```bash
+npm run test:perf:documentacao              # smoke (padrão)
+npm run test:perf:documentacao -- load
+npm run test:perf:documentacao -- stress
+npm run test:perf:documentacao -- spike
 ```
 
 ## Evidência executada
 
-Execução validada no ambiente real com a aplicação pública. O script foi executado com todos os cenários configurados.
+### Smoke - 26/10/2026
 
-### Resultado real
+Perfil `smoke` (1 VU por 20 s): **thresholds aprovados**.
+
+| Métrica | Resultado |
+| --- | --- |
+| Checks | 100% (45/45) |
+| `http_req_failed` | 0,00% (0/45) |
+| `http_req_duration` p95 | 299,40 ms |
+
+### Correção do check de conteúdo
+
+A aplicação é uma SPA: a resposta HTTP de `/docs` contém apenas o shell HTML (`<div id="root">`), e o texto "Documentação" é renderizado no navegador. Como o k6 não executa JavaScript, o check antigo `docs content is present` falhava em **100% das iterações, mesmo com 1 usuário**. Ele foi substituído por `docs SPA shell is delivered`. O conteúdo da página continua validado pelo Playwright em `tests/documentacao.spec.ts`.
+
+### Execução com todos os cenários simultâneos (registro anterior)
+
+Execução realizada antes da separação por perfis e da correção acima, com os 4 cenários rodando ao mesmo tempo.
 
 - Cenários executados: 4
 - VUs máximos observados: 1162
@@ -41,6 +57,8 @@ Execução validada no ambiente real com a aplicação pública. O script foi ex
 
 ### Observação importante
 
-Os limiares de aceitação foram excedidos na fase de pico, principalmente no conteúdo da página de documentação, indicando que a tela começa a sofrer degradação quando a carga cresce para 500–1000 usuários simultâneos.
+Os limiares de aceitação foram excedidos na fase de pico, indicando que a tela começa a sofrer degradação quando a carga cresce para 500–1000 usuários simultâneos (p95 de 9,19 s e 0,65% de falhas HTTP).
+
+A taxa de 66,89% de checks **não** reflete degradação: 1 dos 3 checks (`docs content is present`) falhava sempre, pelo motivo descrito em "Correção do check de conteúdo". A análise de degradação deve se basear no p95 e na taxa de falhas HTTP.
 
 Isso é um resultado útil de desempenho: o cenário é capaz de identificar gargalos reais, e a página precisa de otimização de desempenho em alta concorrência.

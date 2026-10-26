@@ -1,12 +1,21 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
+import { buildSummary, PROFILE, selectScenarios } from './lib/k6-utils.js';
 
 const BASE_URL = __ENV.BASE_URL || 'https://english.qazando.com.br';
-const TEST_USER_EMAIL = __ENV.TEST_USER_EMAIL || 'admin@teste.com';
-const TEST_USER_PASSWORD = __ENV.TEST_USER_PASSWORD || 'Teste@123';
-const PREMIUM_USER_EMAIL = __ENV.TEST_PREMIUM_EMAIL || '';
-const PREMIUM_USER_PASSWORD = __ENV.TEST_PREMIUM_PASSWORD || '';
+const TEST_USER_EMAIL = __ENV.TEST_USER_EMAIL;
+const TEST_USER_PASSWORD = __ENV.TEST_USER_PASSWORD;
+const PREMIUM_USER_EMAIL = __ENV.PREMIUM_USER_EMAIL;
+const PREMIUM_USER_PASSWORD = __ENV.PREMIUM_USER_PASSWORD;
+
+if (!TEST_USER_EMAIL || !TEST_USER_PASSWORD) {
+  throw new Error('Set TEST_USER_EMAIL and TEST_USER_PASSWORD before running this test.');
+}
+
+if (PROFILE === 'premium' && (!PREMIUM_USER_EMAIL || !PREMIUM_USER_PASSWORD)) {
+  throw new Error('Set PREMIUM_USER_EMAIL and PREMIUM_USER_PASSWORD to run the premium profile.');
+}
 
 const rankingResponseTime = new Trend('ranking_response_time');
 const rankingErrorRate = new Rate('ranking_error_rate');
@@ -51,7 +60,7 @@ function accessRanking(email, password) {
 }
 
 export const options = {
-  scenarios: {
+  scenarios: selectScenarios({
     smoke_ranking: {
       executor: 'constant-vus',
       vus: 1,
@@ -78,7 +87,18 @@ export const options = {
       duration: '20s',
       exec: 'blockedRanking',
     },
-  },
+    performance_ranking_premium: {
+      executor: 'constant-vus',
+      vus: 1,
+      duration: '20s',
+      exec: 'premiumRanking',
+    },
+  }, {
+    smoke: ['smoke_ranking'],
+    stress: ['performance_ranking_ramp'],
+    blocked: ['performance_ranking_blocked_access'],
+    premium: ['performance_ranking_premium'],
+  }),
   thresholds: {
     http_req_failed: ['rate<0.05'],
     http_req_duration: ['p(95)<2500'],
@@ -91,6 +111,8 @@ export const options = {
 export default function () {
   smokeRanking();
 }
+
+export const handleSummary = buildSummary('ranking', 'Performance - Ranking');
 
 export function smokeRanking() {
   group('acesso e validação da tela de ranking', () => {
@@ -169,10 +191,6 @@ export function blockedRanking() {
 }
 
 export function premiumRanking() {
-  if (!PREMIUM_USER_EMAIL || !PREMIUM_USER_PASSWORD) {
-    return;
-  }
-
   group('acesso ao ranking com usuário premium', () => {
     const result = accessRanking(PREMIUM_USER_EMAIL, PREMIUM_USER_PASSWORD);
 

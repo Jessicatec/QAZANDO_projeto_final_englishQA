@@ -16,14 +16,28 @@ Validar o comportamento da tela de Ranking da plataforma English QA sob carga pr
 
 ## Comando de execução
 
-```powershell
-$env:BASE_URL="https://english.qazando.com.br"
-$env:TEST_USER_EMAIL="admin@teste.com"
-$env:TEST_USER_PASSWORD="Teste@123"
-& "C:\Program Files\k6\k6.exe" run .\performance\performance_ranking.k6.js
+As credenciais são lidas do `.env`. Cada perfil executa apenas os seus cenários (veja [performance/README.md](../performance/README.md)).
+
+```bash
+npm run test:perf:ranking                # smoke (padrão)
+npm run test:perf:ranking -- stress      # escalonamento até 1000 VUs
+npm run test:perf:ranking -- blocked     # 25 VUs sem Premium
+npm run test:perf:ranking -- premium     # exige PREMIUM_USER_EMAIL/PREMIUM_USER_PASSWORD
 ```
 
 ## Evidência executada
+
+### Smoke - 26/10/2026
+
+Perfil `smoke` (1 VU por 20 s): **thresholds aprovados**.
+
+| Métrica | Resultado |
+| --- | --- |
+| Checks | 100% (45/45) |
+| `http_req_failed` | 0,00% (0/45) |
+| `http_req_duration` p95 | 302,35 ms |
+
+### Registro anterior
 
 Execução validada no ambiente real com a aplicação pública. O script foi executado com carga mínima para validação da sintaxe e do comportamento básico da rota.
 

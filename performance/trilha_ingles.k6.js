@@ -1,10 +1,16 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
+import { buildSummary, selectScenarios } from './lib/k6-utils.js';
 
 const BASE_URL = __ENV.BASE_URL || 'https://english.qazando.com.br';
-const TEST_USER_EMAIL = __ENV.TEST_USER_EMAIL || 'admin@teste.com';
-const TEST_USER_PASSWORD = __ENV.TEST_USER_PASSWORD || 'Teste@123';
+const TEST_USER_EMAIL = __ENV.TEST_USER_EMAIL;
+const TEST_USER_PASSWORD = __ENV.TEST_USER_PASSWORD;
+
+if (!TEST_USER_EMAIL || !TEST_USER_PASSWORD) {
+  throw new Error('Set TEST_USER_EMAIL and TEST_USER_PASSWORD before running this test.');
+}
+
 const FORM_BODY = `email=${encodeURIComponent(TEST_USER_EMAIL)}&password=${encodeURIComponent(TEST_USER_PASSWORD)}`;
 
 const responseTime = new Trend('exercise_response_time');
@@ -63,7 +69,7 @@ function accessLearningTrail() {
 }
 
 export const options = {
-  scenarios: {
+  scenarios: selectScenarios({
     performance_Exercicios: {
       executor: 'constant-vus',
       vus: 1,
@@ -96,7 +102,11 @@ export const options = {
       gracefulRampDown: '10s',
       exec: 'loadJourney',
     },
-  },
+  }, {
+    smoke: ['performance_Exercicios'],
+    load: ['performance_Exercicios_load'],
+    stress: ['performance_Exercicios_escala'],
+  }),
   thresholds: {
     http_req_failed: ['rate<0.05'],
     http_req_duration: ['p(95)<2000'],
@@ -109,6 +119,8 @@ export const options = {
 export default function () {
   smokeJourney();
 }
+
+export const handleSummary = buildSummary('trilha_ingles', 'Performance - Trilha do Inglês');
 
 export function smokeJourney() {
   group('autenticação e exercícios', () => {
